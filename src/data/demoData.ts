@@ -18,9 +18,15 @@ export const demoClientes: Cliente[] = [
     email: 'maria.silva@email.com',
     telefone: '(11) 99876-5432',
     dataNascimento: '1985-03-15',
-    endereco: 'Rua das Flores, 123 - São Paulo, SP',
-    observacoes: 'Histórico de lesão no joelho esquerdo',
     dataCadastro: '2024-01-15',
+    sexo: 'F',
+    cidade: 'São Paulo',
+    bairro: 'Centro',
+    profissao: 'Professora',
+    enderecoResidencial: 'Rua das Flores, 123',
+    enderecoComercial: 'Escola Municipal ABC',
+    naturalidade: 'Brasileira',
+    estadoCivil: 'Casado',
   },
   {
     id: 2,
@@ -28,9 +34,15 @@ export const demoClientes: Cliente[] = [
     email: 'joao.carlos@email.com',
     telefone: '(11) 98765-4321',
     dataNascimento: '1978-08-22',
-    endereco: 'Av. Principal, 456 - São Paulo, SP',
-    observacoes: 'Dor lombar crônica',
     dataCadastro: '2024-02-01',
+    sexo: 'M',
+    cidade: 'São Paulo',
+    bairro: 'Vila Madalena',
+    profissao: 'Engenheiro',
+    enderecoResidencial: 'Av. Principal, 456',
+    enderecoComercial: 'Empresa XYZ Ltda',
+    naturalidade: 'Brasileira',
+    estadoCivil: 'Solteiro',
   },
   {
     id: 3,
@@ -38,9 +50,15 @@ export const demoClientes: Cliente[] = [
     email: 'ana.paula@email.com',
     telefone: '(11) 97654-3210',
     dataNascimento: '1992-12-10',
-    endereco: 'Rua da Alegria, 789 - São Paulo, SP',
-    observacoes: 'Recuperação pós-cirúrgica ombro direito',
     dataCadastro: '2024-02-10',
+    sexo: 'F',
+    cidade: 'São Paulo',
+    bairro: 'Moema',
+    profissao: 'Advogada',
+    enderecoResidencial: 'Rua da Alegria, 789',
+    enderecoComercial: 'Escritório Jurídico ABC',
+    naturalidade: 'Brasileira',
+    estadoCivil: 'Divorciado',
   },
   {
     id: 4,
@@ -48,9 +66,15 @@ export const demoClientes: Cliente[] = [
     email: 'roberto.costa@email.com',
     telefone: '(11) 96543-2109',
     dataNascimento: '1960-05-30',
-    endereco: 'Praça Central, 321 - São Paulo, SP',
-    observacoes: 'Reabilitação motora pós-AVC',
     dataCadastro: '2024-01-20',
+    sexo: 'M',
+    cidade: 'São Paulo',
+    bairro: 'Liberdade',
+    profissao: 'Aposentado',
+    enderecoResidencial: 'Praça Central, 321',
+    enderecoComercial: '',
+    naturalidade: 'Brasileira',
+    estadoCivil: 'Viúvo',
   },
   {
     id: 5,
@@ -58,9 +82,15 @@ export const demoClientes: Cliente[] = [
     email: 'carla.mendes@email.com',
     telefone: '(11) 95432-1098',
     dataNascimento: '1988-09-18',
-    endereco: 'Rua Nova, 654 - São Paulo, SP',
-    observacoes: 'Fortalecimento muscular geral',
     dataCadastro: '2024-02-15',
+    sexo: 'F',
+    cidade: 'São Paulo',
+    bairro: 'Pinheiros',
+    profissao: 'Designer',
+    enderecoResidencial: 'Rua Nova, 654',
+    enderecoComercial: 'Studio Design Criativo',
+    naturalidade: 'Brasileira',
+    estadoCivil: 'União Estável',
   },
 ];
 
@@ -103,14 +133,12 @@ export const gerarSessoesDemoSemana = (): Sessao[] => {
       sessoes.push({
         id: sessoes.length + 1,
         clienteId: cliente.id!,
-        cliente: cliente,
+        nome: `${cliente.nome} - Fisioterapia`,
         dataHoraInicio: inicio.format('YYYY-MM-DDTHH:mm:ss'),
         dataHoraFim: fim.format('YYYY-MM-DDTHH:mm:ss'),
-        tipo: 'Fisioterapia',
-        status: status,
-        observacoes: `Sessão de fisioterapia - ${cliente.nome}`,
-        valor: 80.00,
-        googleEventId: `demo_event_${sessoes.length + 1}`,
+        status: status as 'AGENDADA' | 'CONCLUIDA' | 'CANCELADA',
+        notasSessao: `Sessão de fisioterapia - ${cliente.nome}`,
+        notificacao: true,
       });
     });
   }
@@ -131,9 +159,9 @@ export const demoStats: DashboardStats = {
   faturamentoMes: demoSessoes
     .filter(s => 
       moment(s.dataHoraInicio).isSame(moment(), 'month') && 
-      s.status === StatusSessao.CONCLUIDA
+      s.status === 'CONCLUIDA'
     )
-    .reduce((total, s) => total + (s.valor || 0), 0),
+    .reduce((total, s) => total + 80, 0),
 };
 
 // Simular chamadas de API com delay
@@ -165,7 +193,7 @@ export const mockApiCalls = {
     return demoSessoes[sessaoIndex];
   },
 
-  async atualizarStatusSessao(id: number, status: StatusSessao): Promise<Sessao> {
+  async atualizarStatusSessao(id: number, status: 'AGENDADA' | 'CONCLUIDA' | 'CANCELADA'): Promise<Sessao> {
     await delay(300);
     const sessaoIndex = demoSessoes.findIndex(s => s.id === id);
     if (sessaoIndex === -1) {

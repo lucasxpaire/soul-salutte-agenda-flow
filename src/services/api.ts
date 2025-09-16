@@ -3,7 +3,7 @@ import { Cliente, Sessao, AvaliacaoFisioterapeutica, ApiResponse, FormSessaoData
 
 // Configuração base do Axios
 const api = axios.create({
-  baseURL: '/api', // Vite proxy configurado para redirecionar para localhost:8080
+  baseURL: '/api',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
@@ -13,7 +13,7 @@ const api = axios.create({
 // Interceptador para adicionar token de autenticação se necessário
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -30,7 +30,7 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       // Token expirado ou inválido
-      localStorage.removeItem('auth_token');
+      localStorage.removeItem('token');
       window.location.href = '/login';
     }
     return Promise.reject(error);
@@ -87,12 +87,22 @@ export const deleteSessao = (id: number): Promise<void> => {
     return api.delete(`/sessoes/${id}`);
 };
 
+// Função para obter sessões por período
+export const getSessoesPorPeriodo = async (inicio: string, fim: string): Promise<Sessao[]> => {
+  const response = await api.get('/sessoes', {
+    params: { inicio, fim }
+  });
+  return response.data;
+};
+
 // Novo endpoint para mover sessão (drag and drop)
-export const moverSessao = (id: number, novoInicio: string, novoFim: string): Promise<Sessao> => 
-  api.patch(`/sessoes/${id}/mover`, {
+export const moverSessaoApi = async (sessaoId: number, novoInicio: string, novoFim: string): Promise<Sessao> => {
+  const response = await api.put(`/sessoes/${sessaoId}/mover`, {
     dataHoraInicio: novoInicio,
     dataHoraFim: novoFim,
-  }).then(res => res.data);
+  });
+  return response.data;
+};
 
 // Novo endpoint para atualizar status
 export const atualizarStatusSessao = (id: number, status: string): Promise<Sessao> => 

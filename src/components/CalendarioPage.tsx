@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { CalendarIcon, Plus, RefreshCw } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Sessao, CalendarEvent } from '@/types';
-import { moverSessao, atualizarStatusSessao } from '@/services/api';
+import { moverSessaoApi, atualizarStatusSessao } from '@/services/api';
 import { mockApiCalls } from '@/data/demoData';
 import { toast } from 'sonner';
 import moment from 'moment';

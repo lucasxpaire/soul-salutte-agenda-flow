@@ -7,7 +7,7 @@ import { componentTagger } from "lovable-tagger";
 export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
-    port: 3000, // Frontend na porta 3000
+    port: 8080, // Frontend na porta 8080
     proxy: {
       // Proxy para o backend Spring Boot na porta 8080
       '/api': {

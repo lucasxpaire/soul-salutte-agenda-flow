@@ -45,21 +45,9 @@ const AuthenticatedApp = () => {
       case 'agenda':
         return <CalendarioPage onAddSessao={() => {}} onEditSessao={() => {}} />;
       case 'clientes':
-        return (
-          <PlaceholderPage
-            title="Gestão de Clientes"
-            icon={Users}
-            description="Módulo de gestão de clientes será implementado aqui. Cadastro, edição e histórico completo dos pacientes."
-          />
-        );
+        return <ClientesPage onSelectCliente={() => {}} onAddCliente={() => {}} />;
       case 'avaliacoes':
-        return (
-          <PlaceholderPage
-            title="Avaliações Fisioterapêuticas"
-            icon={FileText}
-            description="Módulo de avaliações fisioterapêuticas será implementado aqui. Formulários detalhados e histórico de evolução."
-          />
-        );
+        return <AvaliacoesPage />;
       default:
         return <Dashboard onNavigate={setCurrentPage} />;
     }

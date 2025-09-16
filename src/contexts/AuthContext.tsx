@@ -21,6 +21,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [loginLoading, setLoginLoading] = useState<boolean>(false);
 
   // Verificar token ao carregar a aplicação
   useEffect(() => {
@@ -49,48 +50,42 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     checkAuthStatus();
   }, []);
 
-  const login = async (username: string, password: string): Promise<boolean> => {
+  const login = async (email: string, password: string): Promise<boolean> => {
+    setLoginLoading(true);
     try {
       // Simulação de login para desenvolvimento
       // Aceitar qualquer usuário/senha para demonstração
-      if (username && password) {
+      if (email && password) {
         const token = 'demo_token_' + Date.now();
         const userData = {
           id: 1,
-          username: username,
-          nome: 'Dr. ' + username,
-          email: username + '@soulsalutte.com',
+          username: email,
+          nome: 'Dr. ' + email.split('@')[0],
+          email: email,
           role: 'Fisioterapeuta',
         };
 
-        localStorage.setItem('auth_token', token);
+        localStorage.setItem('token', token);
         setIsAuthenticated(true);
         setUser(userData);
-
-        toast.success('Login realizado com sucesso!', {
-          className: 'soul-toast-success',
-        });
 
         return true;
       } else {
         throw new Error('Usuário e senha são obrigatórios');
       }
     } catch (error) {
-      toast.error('Erro ao fazer login. Verifique suas credenciais.', {
-        className: 'soul-toast-error',
-      });
       return false;
+    } finally {
+      setLoginLoading(false);
     }
   };
 
   const logout = () => {
-    localStorage.removeItem('auth_token');
+    localStorage.removeItem('token');
     setIsAuthenticated(false);
     setUser(null);
     
-    toast.success('Logout realizado com sucesso!', {
-      className: 'soul-toast-success',
-    });
+    toast.success('Logout realizado com sucesso!');
   };
 
   const value: AuthContextType = {
@@ -98,6 +93,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     login,
     logout,
     user,
+    isLoading: loginLoading,
   };
 
   if (isLoading) {

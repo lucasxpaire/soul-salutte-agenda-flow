@@ -107,6 +107,10 @@
   }
 }
 
+.bg-login {
+  background: hsl(var(--soul-primary));
+}
+
 @layer base {
   * {
     @apply border-border;
