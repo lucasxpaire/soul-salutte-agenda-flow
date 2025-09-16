@@ -12,7 +12,6 @@ import {
   Activity
 } from 'lucide-react';
 import { DashboardStats, Sessao } from '@/types';
-import { dashboardApi, sessaoApi, handleApiError } from '@/services/api';
 import { mockApiCalls, demoStats, demoSessoes } from '@/data/demoData';
 import { toast } from 'sonner';
 import moment from 'moment';

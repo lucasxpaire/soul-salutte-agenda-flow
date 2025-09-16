@@ -6,7 +6,8 @@ import 'moment/locale/pt-br';
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 
-import { Sessao, StatusSessao, CalendarEvent, AgendaSemanalProps } from '@/types';
+import { Sessao, CalendarEvent, AgendaSemanalProps } from '@/types';
+import { StatusSessao } from '@/data/demoData';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';

@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
-import { Cliente, Sessao, Avaliacao, ApiResponse, FormSessaoData, DashboardStats } from '@/types';
+import { Cliente, Sessao, AvaliacaoFisioterapeutica, ApiResponse, FormSessaoData, DashboardStats } from '@/types';
 
 // Configuração base do Axios
 const api = axios.create({
@@ -41,86 +41,86 @@ api.interceptors.response.use(
 // CLIENTES API
 // =============================================================================
 
-export const clienteApi = {
-  listar: (): Promise<AxiosResponse<Cliente[]>> => 
-    api.get('/clientes'),
+// Funções para Clientes
+export const getClientes = (nome?: string): Promise<Cliente[]> => {
+  return api.get('/clientes', { params: { nome } }).then(res => res.data);
+};
 
-  buscar: (id: number): Promise<AxiosResponse<Cliente>> => 
-    api.get(`/clientes/${id}`),
+export const getClienteById = (id: number): Promise<Cliente> => {
+  return api.get(`/clientes/${id}`).then(res => res.data);
+};
 
-  criar: (cliente: Cliente): Promise<AxiosResponse<Cliente>> => 
-    api.post('/clientes', cliente),
+export const createCliente = (cliente: Omit<Cliente, 'id' | 'dataCadastro'>): Promise<Cliente> => {
+  return api.post('/clientes', cliente).then(res => res.data);
+};
 
-  atualizar: (id: number, cliente: Cliente): Promise<AxiosResponse<Cliente>> => 
-    api.put(`/clientes/${id}`, cliente),
+export const updateCliente = (id: number, cliente: Partial<Cliente>): Promise<Cliente> => {
+  return api.put(`/clientes/${id}`, cliente).then(res => res.data);
+};
 
-  excluir: (id: number): Promise<AxiosResponse<void>> => 
-    api.delete(`/clientes/${id}`),
-
-  buscarPorNome: (nome: string): Promise<AxiosResponse<Cliente[]>> => 
-    api.get(`/clientes/buscar?nome=${encodeURIComponent(nome)}`),
+export const deleteCliente = (id: number): Promise<void> => {
+  return api.delete(`/clientes/${id}`);
 };
 
 // =============================================================================
 // SESSÕES API
 // =============================================================================
 
-export const sessaoApi = {
-  listar: (): Promise<AxiosResponse<Sessao[]>> => 
-    api.get('/sessoes'),
-
-  listarPorPeriodo: (inicio: string, fim: string): Promise<AxiosResponse<Sessao[]>> => 
-    api.get(`/sessoes?inicio=${inicio}&fim=${fim}`),
-
-  buscar: (id: number): Promise<AxiosResponse<Sessao>> => 
-    api.get(`/sessoes/${id}`),
-
-  criar: (sessao: FormSessaoData): Promise<AxiosResponse<Sessao>> => 
-    api.post('/sessoes', sessao),
-
-  atualizar: (id: number, sessao: Partial<Sessao>): Promise<AxiosResponse<Sessao>> => 
-    api.put(`/sessoes/${id}`, sessao),
-
-  excluir: (id: number): Promise<AxiosResponse<void>> => 
-    api.delete(`/sessoes/${id}`),
-
-  // Novo endpoint para mover sessão (drag and drop)
-  mover: (id: number, novoInicio: string, novoFim: string): Promise<AxiosResponse<Sessao>> => 
-    api.patch(`/sessoes/${id}/mover`, {
-      dataHoraInicio: novoInicio,
-      dataHoraFim: novoFim,
-    }),
-
-  // Novo endpoint para atualizar status
-  atualizarStatus: (id: number, status: string): Promise<AxiosResponse<Sessao>> => 
-    api.patch(`/sessoes/${id}/status`, { status }),
-
-  listarPorCliente: (clienteId: number): Promise<AxiosResponse<Sessao[]>> => 
-    api.get(`/sessoes/cliente/${clienteId}`),
+// Funções para Sessões
+export const getSessoes = (): Promise<Sessao[]> => {
+  return api.get('/sessoes').then(res => res.data);
 };
+
+export const getSessoesByClienteId = (clienteId: number): Promise<Sessao[]> => {
+    return api.get(`/sessoes/cliente/${clienteId}`).then(res => res.data);
+};
+
+export const createSessao = (sessao: Omit<Sessao, 'id'>): Promise<Sessao> => {
+    return api.post(`/sessoes/cliente/${sessao.clienteId}`, sessao).then(res => res.data);
+};
+
+export const updateSessao = (id: number, sessao: Partial<Sessao>): Promise<Sessao> => {
+    return api.put(`/sessoes/${id}`, sessao).then(res => res.data);
+};
+
+export const deleteSessao = (id: number): Promise<void> => {
+    return api.delete(`/sessoes/${id}`);
+};
+
+// Novo endpoint para mover sessão (drag and drop)
+export const moverSessao = (id: number, novoInicio: string, novoFim: string): Promise<Sessao> => 
+  api.patch(`/sessoes/${id}/mover`, {
+    dataHoraInicio: novoInicio,
+    dataHoraFim: novoFim,
+  }).then(res => res.data);
+
+// Novo endpoint para atualizar status
+export const atualizarStatusSessao = (id: number, status: string): Promise<Sessao> => 
+  api.patch(`/sessoes/${id}/status`, { status }).then(res => res.data);
 
 // =============================================================================
 // AVALIAÇÕES API
 // =============================================================================
 
-export const avaliacaoApi = {
-  listar: (): Promise<AxiosResponse<Avaliacao[]>> => 
-    api.get('/avaliacoes'),
+// Funções para Avaliações
+export const getAvaliacoesByCliente = (clienteId: number): Promise<AvaliacaoFisioterapeutica[]> => {
+  return api.get(`/avaliacoes/cliente/${clienteId}`).then(res => res.data);
+};
 
-  buscar: (id: number): Promise<AxiosResponse<Avaliacao>> => 
-    api.get(`/avaliacoes/${id}`),
+export const createAvaliacao = (avaliacao: Omit<AvaliacaoFisioterapeutica, 'id'>): Promise<AvaliacaoFisioterapeutica> => {
+    return api.post(`/avaliacoes/cliente/${avaliacao.clienteId}`, avaliacao).then(res => res.data);
+};
 
-  criar: (avaliacao: Avaliacao): Promise<AxiosResponse<Avaliacao>> => 
-    api.post('/avaliacoes', avaliacao),
+export const updateAvaliacao = (id: number, avaliacao: Partial<AvaliacaoFisioterapeutica>): Promise<AvaliacaoFisioterapeutica> => {
+    return api.put(`/avaliacoes/${id}`, avaliacao).then(res => res.data);
+};
 
-  atualizar: (id: number, avaliacao: Avaliacao): Promise<AxiosResponse<Avaliacao>> => 
-    api.put(`/avaliacoes/${id}`, avaliacao),
+export const deleteAvaliacao = (id: number): Promise<void> => {
+    return api.delete(`/avaliacoes/${id}`);
+};
 
-  excluir: (id: number): Promise<AxiosResponse<void>> => 
-    api.delete(`/avaliacoes/${id}`),
-
-  listarPorCliente: (clienteId: number): Promise<AxiosResponse<Avaliacao[]>> => 
-    api.get(`/avaliacoes/cliente/${clienteId}`),
+export const adicionarEvolucao = (avaliacaoId: number, texto: string): Promise<AvaliacaoFisioterapeutica> => {
+    return api.post(`/avaliacoes/${avaliacaoId}/evolucoes`, { evolucao: texto }).then(res => res.data);
 };
 
 // =============================================================================

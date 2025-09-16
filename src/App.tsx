@@ -11,7 +11,7 @@ import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import LoginPage from '@/components/LoginPage';
 import Navigation from '@/components/Navigation';
 import Dashboard from '@/components/Dashboard';
-import AgendaPage from '@/components/AgendaPage';
+import CalendarioPage from '@/components/CalendarioPage';
 import { Card, CardContent } from '@/components/ui/card';
 import { Users, FileText, Calendar, Home } from 'lucide-react';
 
@@ -43,7 +43,7 @@ const AuthenticatedApp = () => {
       case 'dashboard':
         return <Dashboard onNavigate={setCurrentPage} />;
       case 'agenda':
-        return <AgendaPage />;
+        return <CalendarioPage onAddSessao={() => {}} onEditSessao={() => {}} />;
       case 'clientes':
         return (
           <PlaceholderPage

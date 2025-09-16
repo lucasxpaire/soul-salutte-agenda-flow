@@ -1,5 +1,13 @@
-import { Cliente, Sessao, StatusSessao, DashboardStats } from '@/types';
+import { Cliente, Sessao, DashboardStats } from '@/types';
 import moment from 'moment';
+
+// Status enum for demo data
+export enum StatusSessao {
+  AGENDADA = 'AGENDADA',
+  CONCLUIDA = 'CONCLUIDA', 
+  CANCELADA = 'CANCELADA',
+  FALTA = 'FALTA'
+}
 
 // Dados de demonstração para desenvolvimento/teste
 
@@ -12,7 +20,7 @@ export const demoClientes: Cliente[] = [
     dataNascimento: '1985-03-15',
     endereco: 'Rua das Flores, 123 - São Paulo, SP',
     observacoes: 'Histórico de lesão no joelho esquerdo',
-    dataRegistro: '2024-01-15',
+    dataCadastro: '2024-01-15',
   },
   {
     id: 2,
@@ -22,7 +30,7 @@ export const demoClientes: Cliente[] = [
     dataNascimento: '1978-08-22',
     endereco: 'Av. Principal, 456 - São Paulo, SP',
     observacoes: 'Dor lombar crônica',
-    dataRegistro: '2024-02-01',
+    dataCadastro: '2024-02-01',
   },
   {
     id: 3,
@@ -32,7 +40,7 @@ export const demoClientes: Cliente[] = [
     dataNascimento: '1992-12-10',
     endereco: 'Rua da Alegria, 789 - São Paulo, SP',
     observacoes: 'Recuperação pós-cirúrgica ombro direito',
-    dataRegistro: '2024-02-10',
+    dataCadastro: '2024-02-10',
   },
   {
     id: 4,
@@ -42,7 +50,7 @@ export const demoClientes: Cliente[] = [
     dataNascimento: '1960-05-30',
     endereco: 'Praça Central, 321 - São Paulo, SP',
     observacoes: 'Reabilitação motora pós-AVC',
-    dataRegistro: '2024-01-20',
+    dataCadastro: '2024-01-20',
   },
   {
     id: 5,
@@ -52,7 +60,7 @@ export const demoClientes: Cliente[] = [
     dataNascimento: '1988-09-18',
     endereco: 'Rua Nova, 654 - São Paulo, SP',
     observacoes: 'Fortalecimento muscular geral',
-    dataRegistro: '2024-02-15',
+    dataCadastro: '2024-02-15',
   },
 ];
 

@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Plus, RefreshCw } from 'lucide-react';
 import { Sessao, CalendarEvent, Cliente, FormSessaoData } from '@/types';
-import { sessaoApi, clienteApi, handleApiError } from '@/services/api';
 import { mockApiCalls } from '@/data/demoData';
 import { toast } from 'sonner';
 import moment from 'moment';

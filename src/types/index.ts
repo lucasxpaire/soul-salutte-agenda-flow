@@ -2,24 +2,24 @@
 // TypeScript Types and Interfaces
 
 export interface Cliente {
-  id?: number;
+  id: number;
   nome: string;
   email: string;
   telefone: string;
   dataNascimento: string;
   endereco: string;
   observacoes?: string;
-  dataRegistro?: string;
+  dataCadastro?: string;
 }
 
 export interface Sessao {
-  id?: number;
+  id: number;
   clienteId: number;
   cliente?: Cliente;
   dataHoraInicio: string;
   dataHoraFim: string;
   tipo: string;
-  status: StatusSessao;
+  status: string;
   observacoes?: string;
   valor?: number;
   googleEventId?: string;
@@ -32,8 +32,8 @@ export enum StatusSessao {
   FALTA = 'FALTA'
 }
 
-export interface Avaliacao {
-  id?: number;
+export interface AvaliacaoFisioterapeutica {
+  id: number;
   clienteId: number;
   cliente?: Cliente;
   dataAvaliacao: string;
@@ -43,7 +43,7 @@ export interface Avaliacao {
   diagnostico: string;
   planoTerapeutico: string;
   observacoes?: string;
-  evolucao?: string;
+  evolucoes?: string[];
 }
 
 export interface FormSessaoData {
