@@ -46,6 +46,7 @@ const formatPhoneInput = (value: string) => {
   return value.slice(0, 15); // Limita o tamanho para (XX) XXXXX-XXXX
 };
 
+
 const ClienteForm: React.FC<ClienteFormProps> = ({
   isOpen,
   onClose,
@@ -56,7 +57,6 @@ const ClienteForm: React.FC<ClienteFormProps> = ({
   const [nationalitySearch, setNationalitySearch] = useState('');
   const [isNationalityDropdownOpen, setIsNationalityDropdownOpen] = useState(false);
   const nationalityRef = useRef<HTMLDivElement>(null);
-  const [isLoading, setIsLoading] = useState(false);
 
   // O useMemo otimiza a filtragem, recalculando a lista apenas quando a busca muda
   const filteredNationalities = useMemo(() => {
@@ -87,7 +87,7 @@ const ClienteForm: React.FC<ClienteFormProps> = ({
         enderecoComercial: cliente.enderecoComercial,
         naturalidade: cliente.naturalidade,
         estadoCivil: cliente.estadoCivil,
-        dataNascimento: (cliente.dataNascimento || '').split('T')[0]!,
+        dataNascimento: cliente.dataNascimento ? cliente.dataNascimento.split('T')[0] : '',
       };
       setFormData(initialData);
       
@@ -106,282 +106,208 @@ const ClienteForm: React.FC<ClienteFormProps> = ({
         profissao: '',
         enderecoResidencial: '',
         enderecoComercial: '',
-        naturalidade: '',
-        estadoCivil: 'Solteiro',
+        naturalidade: '', // Começa vazio
+        estadoCivil: 'Solteiro'
       });
-      
-      setNationalitySearch('');
+      setNationalitySearch(''); // A busca também começa vazia
     }
   }, [cliente, isOpen]);
 
-  const handleInputChange = (field: keyof Cliente, value: any) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
+  // Efeito para fechar o dropdown se clicar fora
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (nationalityRef.current && !nationalityRef.current.contains(event.target as Node)) {
+        setIsNationalityDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
-  const handlePhoneChange = (value: string) => {
-    const formattedPhone = formatPhoneInput(value);
-    handleInputChange('telefone', formattedPhone);
-  };
-
-  const handleNationalitySelect = (nationality: string) => {
-    setNationalitySearch(nationality);
-    handleInputChange('naturalidade', nationality);
-    setIsNationalityDropdownOpen(false);
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
+    
+    if (!formData.nome || !formData.email || !formData.telefone || !formData.dataNascimento) {
+      toast.error('Por favor, preencha os campos obrigatórios (*)');
+      return;
+    }
 
     try {
-      // Validação básica
-      if (!formData.nome || !formData.email || !formData.telefone) {
-        toast.error('Por favor, preencha os campos obrigatórios.');
-        return;
-      }
-
-      if (cliente) {
-        // Edição
+      if (cliente && cliente.id) {
         await updateCliente(cliente.id, formData);
         toast.success('Cliente atualizado com sucesso!');
       } else {
-        // Criação
         await createCliente(formData as Omit<Cliente, 'id' | 'dataCadastro'>);
-        toast.success('Cliente criado com sucesso!');
+        toast.success('Cliente cadastrado com sucesso!');
       }
-
       onSave();
       onClose();
     } catch (error) {
-      toast.error('Erro ao salvar cliente. Tente novamente.');
+      toast.error('Ocorreu um erro ao salvar o cliente.');
       console.error(error);
-    } finally {
-      setIsLoading(false);
     }
+  };
+
+  const handleChange = (field: keyof Cliente, value: string) => {
+    if (field === 'telefone') {
+      value = formatPhoneInput(value);
+    }
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleNationalityChange = (value: string) => {
+    setNationalitySearch(value);
+    handleChange('naturalidade', value);
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>{cliente ? 'Editar Cliente' : 'Novo Cliente'}</DialogTitle>
+      <DialogContent className="sm:max-w-2xl max-h-[95vh] flex flex-col p-0 bg-card">
+        <DialogHeader className="p-6 border-b">
+          <DialogTitle className="text-2xl text-primary">
+            {cliente ? 'Editar Cliente' : 'Novo Cliente'}
+          </DialogTitle>
           <DialogDescription>
-            {cliente ? 'Atualize as informações do cliente.' : 'Preencha as informações do novo cliente.'}
+            {cliente 
+              ? 'Atualize as informações do cliente abaixo.'
+              : 'Preencha os dados para cadastrar um novo cliente.'
+            }
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Informações Básicas */}
-          <FormSection title="Informações Básicas">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="nome">Nome Completo *</Label>
-                <InputGroup icon={User}>
-                  <Input
-                    id="nome"
-                    value={formData.nome || ''}
-                    onChange={(e) => handleInputChange('nome', e.target.value)}
-                    placeholder="Digite o nome completo"
-                    className="pl-10"
-                    required
-                  />
-                </InputGroup>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="email">Email *</Label>
-                <InputGroup icon={Mail}>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={formData.email || ''}
-                    onChange={(e) => handleInputChange('email', e.target.value)}
-                    placeholder="Digite o email"
-                    className="pl-10"
-                    required
-                  />
-                </InputGroup>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="telefone">Telefone *</Label>
-                <InputGroup icon={Phone}>
-                  <Input
-                    id="telefone"
-                    value={formData.telefone || ''}
-                    onChange={(e) => handlePhoneChange(e.target.value)}
-                    placeholder="(xx) xxxxx-xxxx"
-                    className="pl-10"
-                    required
-                  />
-                </InputGroup>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="dataNascimento">Data de Nascimento</Label>
-                <InputGroup icon={Cake}>
-                  <Input
-                    id="dataNascimento"
-                    type="date"
-                    value={formData.dataNascimento || ''}
-                    onChange={(e) => handleInputChange('dataNascimento', e.target.value)}
-                    className="pl-10"
-                  />
-                </InputGroup>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="sexo">Sexo</Label>
-                <Select value={formData.sexo || 'F'} onValueChange={(value) => handleInputChange('sexo', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione o sexo" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="F">Feminino</SelectItem>
-                    <SelectItem value="M">Masculino</SelectItem>
-                    <SelectItem value="Outro">Outro</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="profissao">Profissão</Label>
-                <InputGroup icon={Briefcase}>
-                  <Input
-                    id="profissao"
-                    value={formData.profissao || ''}
-                    onChange={(e) => handleInputChange('profissao', e.target.value)}
-                    placeholder="Digite a profissão"
-                    className="pl-10"
-                  />
-                </InputGroup>
-              </div>
-            </div>
-          </FormSection>
-
-          {/* Informações de Endereço */}
-          <FormSection title="Endereço">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="cidade">Cidade</Label>
-                <InputGroup icon={MapPin}>
-                  <Input
-                    id="cidade"
-                    value={formData.cidade || ''}
-                    onChange={(e) => handleInputChange('cidade', e.target.value)}
-                    placeholder="Digite a cidade"
-                    className="pl-10"
-                  />
-                </InputGroup>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="bairro">Bairro</Label>
-                <InputGroup icon={MapPin}>
-                  <Input
-                    id="bairro"
-                    value={formData.bairro || ''}
-                    onChange={(e) => handleInputChange('bairro', e.target.value)}
-                    placeholder="Digite o bairro"
-                    className="pl-10"
-                  />
-                </InputGroup>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="enderecoResidencial">Endereço Residencial</Label>
-                <InputGroup icon={Home}>
-                  <Input
-                    id="enderecoResidencial"
-                    value={formData.enderecoResidencial || ''}
-                    onChange={(e) => handleInputChange('enderecoResidencial', e.target.value)}
-                    placeholder="Digite o endereço residencial"
-                    className="pl-10"
-                  />
-                </InputGroup>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="enderecoComercial">Endereço Comercial</Label>
-                <InputGroup icon={Building}>
-                  <Input
-                    id="enderecoComercial"
-                    value={formData.enderecoComercial || ''}
-                    onChange={(e) => handleInputChange('enderecoComercial', e.target.value)}
-                    placeholder="Digite o endereço comercial"
-                    className="pl-10"
-                  />
-                </InputGroup>
-              </div>
-            </div>
-          </FormSection>
-
-          {/* Informações Adicionais */}
-          <FormSection title="Informações Adicionais">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="naturalidade">Naturalidade</Label>
-                <div className="relative" ref={nationalityRef}>
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-8">
+            <FormSection title="Dados Pessoais">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="nome">Nome Completo *</Label>
+                  <InputGroup icon={User}>
+                    <Input id="nome" value={formData.nome || ''} onChange={(e) => handleChange('nome', e.target.value)} required className="pl-10"/>
+                  </InputGroup>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email *</Label>
+                  <InputGroup icon={Mail}>
+                    <Input id="email" type="email" value={formData.email || ''} onChange={(e) => handleChange('email', e.target.value)} required className="pl-10"/>
+                  </InputGroup>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="telefone">Telefone *</Label>
+                  <InputGroup icon={Phone}>
+                    <Input id="telefone" value={formData.telefone || ''} onChange={(e) => handleChange('telefone', e.target.value)} required className="pl-10"/>
+                  </InputGroup>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="dataNascimento">Data de Nascimento *</Label>
+                  <InputGroup icon={Cake}>
+                    <Input id="dataNascimento" type="date" value={formData.dataNascimento || ''} onChange={(e) => handleChange('dataNascimento', e.target.value)} required className="pl-10"/>
+                  </InputGroup>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="sexo">Sexo</Label>
+                   <Select value={formData.sexo ?? 'F'} onValueChange={(value) => handleChange('sexo', value)}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="F">Feminino</SelectItem>
+                      <SelectItem value="M">Masculino</SelectItem>
+                      <SelectItem value="Outro">Outro</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                 <div className="space-y-2">
+                  <Label htmlFor="estadoCivil">Estado Civil</Label>
+                   <Select value={formData.estadoCivil ?? 'Solteiro'} onValueChange={(value) => handleChange('estadoCivil', value)}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Solteiro">Solteiro(a)</SelectItem>
+                      <SelectItem value="Casado">Casado(a)</SelectItem>
+                      <SelectItem value="Divorciado">Divorciado(a)</SelectItem>
+                      <SelectItem value="Viúvo">Viúvo(a)</SelectItem>
+                      <SelectItem value="União Estável">União Estável</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                 <div className="space-y-2">
+                  <Label htmlFor="profissao">Profissão</Label>
+                  <InputGroup icon={Briefcase}>
+                    <Input id="profissao" value={formData.profissao || ''} onChange={(e) => handleChange('profissao', e.target.value)} className="pl-10"/>
+                  </InputGroup>
+                </div>
+                <div className="space-y-2 relative" ref={nationalityRef}>
+                  <Label htmlFor="naturalidade">Naturalidade</Label>
                   <InputGroup icon={Globe}>
-                    <Input
-                      id="naturalidade"
-                      value={nationalitySearch}
-                      onChange={(e) => {
-                        setNationalitySearch(e.target.value);
-                        setIsNationalityDropdownOpen(true);
-                      }}
+                    <Input 
+                      id="naturalidade" 
+                      value={nationalitySearch} 
+                      onChange={(e) => setNationalitySearch(e.target.value)} 
                       onFocus={() => setIsNationalityDropdownOpen(true)}
-                      placeholder="Digite ou selecione a naturalidade"
+                      onBlur={() => handleChange('naturalidade', nationalitySearch)}
                       className="pl-10"
+                      autoComplete="off"
                     />
                   </InputGroup>
-                  
                   {isNationalityDropdownOpen && (
-                    <div className="absolute z-50 w-full mt-1 bg-background border border-border rounded-md shadow-lg max-h-60 overflow-y-auto">
-                      {filteredNationalities.map((nationality) => (
-                        <div
-                          key={nationality}
-                          className="px-3 py-2 hover:bg-accent cursor-pointer"
-                          onClick={() => handleNationalitySelect(nationality)}
-                        >
-                          {nationality}
-                        </div>
-                      ))}
+                    <div className="absolute z-50 w-full mt-1 bg-card border rounded-md shadow-lg max-h-40 overflow-y-auto">
+                      <ul>
+                        {filteredNationalities.map(n => (
+                          <li 
+                            key={n} 
+                            className="px-3 py-2 cursor-pointer hover:bg-accent"
+                            onMouseDown={() => {
+                              handleNationalityChange(n);
+                              setIsNationalityDropdownOpen(false);
+                            }}
+                          >
+                            {n}
+                          </li>
+                        ))}
+                      </ul>
                     </div>
                   )}
                 </div>
               </div>
+            </FormSection>
 
-              <div className="space-y-2">
-                <Label htmlFor="estadoCivil">Estado Civil</Label>
-                <Select value={formData.estadoCivil || 'Solteiro'} onValueChange={(value) => handleInputChange('estadoCivil', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione o estado civil" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Solteiro">Solteiro</SelectItem>
-                    <SelectItem value="Casado">Casado</SelectItem>
-                    <SelectItem value="Divorciado">Divorciado</SelectItem>
-                    <SelectItem value="Viúvo">Viúvo</SelectItem>
-                    <SelectItem value="União Estável">União Estável</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </FormSection>
-
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose}>
-              Cancelar
-            </Button>
-            <Button type="submit" disabled={isLoading}>
-              {isLoading ? 'Salvando...' : (cliente ? 'Atualizar' : 'Criar')}
-            </Button>
-          </DialogFooter>
+            <FormSection title="Endereço">
+                <div className="space-y-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="enderecoResidencial">Endereço Residencial</Label>
+                        <InputGroup icon={Home}>
+                            <Input id="enderecoResidencial" value={formData.enderecoResidencial || ''} onChange={(e) => handleChange('enderecoResidencial', e.target.value)} className="pl-10"/>
+                        </InputGroup>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="bairro">Bairro</Label>
+                            <InputGroup icon={MapPin}>
+                                <Input id="bairro" value={formData.bairro || ''} onChange={(e) => handleChange('bairro', e.target.value)} className="pl-10"/>
+                            </InputGroup>
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="cidade">Cidade</Label>
+                            <InputGroup icon={Building}>
+                                <Input id="cidade" value={formData.cidade || ''} onChange={(e) => handleChange('cidade', e.target.value)} className="pl-10"/>
+                            </InputGroup>
+                        </div>
+                    </div>
+                     <div className="space-y-2">
+                        <Label htmlFor="enderecoComercial">Endereço Comercial</Label>
+                        <InputGroup icon={Building}>
+                            <Input id="enderecoComercial" value={formData.enderecoComercial || ''} onChange={(e) => handleChange('enderecoComercial', e.target.value)} className="pl-10"/>
+                        </InputGroup>
+                    </div>
+                </div>
+            </FormSection>
         </form>
+        
+        <DialogFooter className="p-6 border-t">
+          <Button type="button" variant="outline" onClick={onClose}>
+            Cancelar
+          </Button>
+          <Button type="submit" onClick={handleSubmit}>
+            {cliente ? 'Salvar Alterações' : 'Cadastrar Cliente'}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

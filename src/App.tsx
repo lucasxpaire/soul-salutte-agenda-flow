@@ -13,9 +13,13 @@ import Navigation from '@/components/Navigation';
 import Dashboard from '@/components/Dashboard';
 import CalendarioPage from '@/components/CalendarioPage';
 import ClientesPage from '@/components/ClientesPage';
-import AvaliacaoPage from '@/components/AvaliacaoPage';
+import ClienteDetalhesPage from '@/components/ClienteDetalhesPage';
+import ClienteForm from '@/components/ClienteForm';
+import AvaliacaoForm from '@/components/AvaliacaoForm';
+import AvaliacaoDetalhesModal from '@/components/AvaliacaoDetalhesModal';
 import { Card, CardContent } from '@/components/ui/card';
 import { Users, FileText, Calendar, Home } from 'lucide-react';
+import { Cliente, AvaliacaoFisioterapeutica } from '@/types';
 
 const queryClient = new QueryClient();
 
@@ -39,17 +43,82 @@ const PlaceholderPage = ({ title, icon: Icon, description }: {
 // Componente principal da aplicação autenticada
 const AuthenticatedApp = () => {
   const [currentPage, setCurrentPage] = useState('dashboard');
+  const [selectedCliente, setSelectedCliente] = useState<Cliente | null>(null);
+  const [showClienteForm, setShowClienteForm] = useState(false);
+  const [clienteToEdit, setClienteToEdit] = useState<Cliente | null>(null);
+  const [showAvaliacaoForm, setShowAvaliacaoForm] = useState(false);
+  const [avaliacaoToEdit, setAvaliacaoToEdit] = useState<AvaliacaoFisioterapeutica | null>(null);
+  const [showAvaliacaoDetalhes, setShowAvaliacaoDetalhes] = useState(false);
+  const [clienteIdForAvaliacao, setClienteIdForAvaliacao] = useState<number | null>(null);
+
+  const handleSelectCliente = (cliente: Cliente) => {
+    setSelectedCliente(cliente);
+  };
+
+  const handleBackToClientes = () => {
+    setSelectedCliente(null);
+  };
+
+  const handleAddCliente = () => {
+    setClienteToEdit(null);
+    setShowClienteForm(true);
+  };
+
+  const handleEditCliente = (cliente: Cliente) => {
+    setClienteToEdit(cliente);
+    setShowClienteForm(true);
+  };
+
+  const handleDeleteCliente = (cliente: Cliente) => {
+    // Implementar lógica de exclusão
+    console.log('Delete cliente:', cliente);
+  };
+
+  const handleAddAvaliacao = (clienteId: number) => {
+    setClienteIdForAvaliacao(clienteId);
+    setAvaliacaoToEdit(null);
+    setShowAvaliacaoForm(true);
+  };
+
+  const handleViewAvaliacao = (avaliacao: AvaliacaoFisioterapeutica) => {
+    setAvaliacaoToEdit(avaliacao);
+    setShowAvaliacaoDetalhes(true);
+  };
+
+  const handleEditAvaliacao = (avaliacao: AvaliacaoFisioterapeutica) => {
+    setAvaliacaoToEdit(avaliacao);
+    setClienteIdForAvaliacao(avaliacao.clienteId);
+    setShowAvaliacaoForm(true);
+  };
+
+  const handleAddSessao = (clienteId: number) => {
+    // Implementar lógica para adicionar sessão
+    console.log('Add sessao for cliente:', clienteId);
+  };
 
   const renderPage = () => {
+    if (selectedCliente) {
+      return (
+        <ClienteDetalhesPage
+          cliente={selectedCliente}
+          onBack={handleBackToClientes}
+          onEdit={handleEditCliente}
+          onDelete={handleDeleteCliente}
+          onAddAvaliacao={handleAddAvaliacao}
+          onViewAvaliacao={handleViewAvaliacao}
+          onEditAvaliacao={handleEditAvaliacao}
+          onAddSessao={handleAddSessao}
+        />
+      );
+    }
+
     switch (currentPage) {
       case 'dashboard':
         return <Dashboard onNavigate={setCurrentPage} />;
       case 'agenda':
         return <CalendarioPage onAddSessao={() => {}} onEditSessao={() => {}} />;
       case 'clientes':
-        return <ClientesPage onSelectCliente={() => {}} onAddCliente={() => {}} />;
-      case 'avaliacoes':
-        return <AvaliacaoPage />;
+        return <ClientesPage onSelectCliente={handleSelectCliente} onAddCliente={handleAddCliente} />;
       default:
         return <Dashboard onNavigate={setCurrentPage} />;
     }
@@ -61,6 +130,34 @@ const AuthenticatedApp = () => {
       <main className="max-w-7xl mx-auto p-6">
         {renderPage()}
       </main>
+
+      {/* Modais */}
+      <ClienteForm
+        isOpen={showClienteForm}
+        onClose={() => setShowClienteForm(false)}
+        cliente={clienteToEdit}
+        onSave={() => {
+          setShowClienteForm(false);
+          setClienteToEdit(null);
+        }}
+      />
+
+      <AvaliacaoForm
+        isOpen={showAvaliacaoForm}
+        onClose={() => setShowAvaliacaoForm(false)}
+        clienteId={clienteIdForAvaliacao || 0}
+        avaliacao={avaliacaoToEdit}
+        onSave={() => {
+          setShowAvaliacaoForm(false);
+          setAvaliacaoToEdit(null);
+        }}
+      />
+
+      <AvaliacaoDetalhesModal
+        isOpen={showAvaliacaoDetalhes}
+        onClose={() => setShowAvaliacaoDetalhes(false)}
+        avaliacao={avaliacaoToEdit}
+      />
     </div>
   );
 };

@@ -45,12 +45,6 @@ const ClientesPage: React.FC<ClientesPageProps> = ({ onSelectCliente, onAddClien
     return idade;
   };
 
-  const filteredClientes = clientes.filter(cliente =>
-    cliente.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    cliente.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    cliente.telefone.includes(searchTerm)
-  );
-
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
@@ -73,7 +67,7 @@ const ClientesPage: React.FC<ClientesPageProps> = ({ onSelectCliente, onAddClien
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
             <Input
-              placeholder="Buscar por nome..."
+              placeholder="Buscar por nome, email ou telefone..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
@@ -84,7 +78,7 @@ const ClientesPage: React.FC<ClientesPageProps> = ({ onSelectCliente, onAddClien
 
       {/* Lista de Clientes */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredClientes.map((cliente) => (
+        {clientes.map((cliente) => (
           <Card 
             key={cliente.id} 
             className="hover:shadow-md transition-shadow cursor-pointer"
@@ -94,7 +88,7 @@ const ClientesPage: React.FC<ClientesPageProps> = ({ onSelectCliente, onAddClien
               <div className="flex justify-between items-start">
                 <CardTitle className="text-lg">{cliente.nome}</CardTitle>
                 <Badge variant={cliente.sexo === 'F' ? 'secondary' : 'outline'}>
-                  {cliente.sexo === 'F' ? 'F' : 'M'}
+                  {cliente.sexo === 'F' ? 'F' : cliente.sexo === 'M' ? 'M' : 'Outro'}
                 </Badge>
               </div>
             </CardHeader>
@@ -131,11 +125,11 @@ const ClientesPage: React.FC<ClientesPageProps> = ({ onSelectCliente, onAddClien
         ))}
       </div>
 
-      {filteredClientes.length === 0 && (
+      {clientes.length === 0 && (
         <Card>
           <CardContent className="text-center py-12">
             <p className="text-muted-foreground">
-              Nenhum cliente encontrado.
+              {searchTerm ? 'Nenhum cliente encontrado para a busca.' : 'Nenhum cliente cadastrado.'}
             </p>
             <Button 
               onClick={onAddCliente} 

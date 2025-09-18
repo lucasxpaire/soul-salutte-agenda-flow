@@ -22,7 +22,6 @@ const menuItems = [
   { id: 'dashboard', label: 'Dashboard', icon: Home },
   { id: 'agenda', label: 'Agenda', icon: Calendar },
   { id: 'clientes', label: 'Clientes', icon: Users },
-  { id: 'avaliacoes', label: 'Avaliações', icon: FileText },
 ];
 
 export default function Navigation({ currentPage, onNavigate }: NavigationProps) {
