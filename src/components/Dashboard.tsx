@@ -208,7 +208,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
                     className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
                   >
                     <div className="flex-1">
-                      <p className="font-medium">{sessao.cliente?.nome}</p>
+                      <p className="font-medium">{sessao.nome}</p>
                       <p className="text-sm text-muted-foreground">
                         {moment(sessao.dataHoraInicio).format('HH:mm')} - {moment(sessao.dataHoraFim).format('HH:mm')}
                       </p>

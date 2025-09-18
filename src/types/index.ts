@@ -29,7 +29,7 @@ export interface Sessao {
   nome: string;
   dataHoraInicio: string;
   dataHoraFim: string;
-  status: 'AGENDADA' | 'CONCLUIDA' | 'CANCELADA';
+  status: 'AGENDADA' | 'CONCLUIDA' | 'CANCELADA' | 'FALTA';
   notasSessao: string;
   clienteId: number;
   notificacao?: boolean; 

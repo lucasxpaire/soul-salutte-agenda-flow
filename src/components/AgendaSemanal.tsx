@@ -7,7 +7,7 @@ import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 import { Sessao, CalendarEvent, AgendaSemanalProps } from '@/types';
-import { StatusSessao } from '@/data/demoData';
+import { StatusSessao } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -78,7 +78,7 @@ export default function AgendaSemanal({
   const events: CalendarEvent[] = useMemo(() => {
     return sessoes.map((sessao) => ({
       id: sessao.id!,
-      title: sessao.cliente?.nome || 'Cliente não informado',
+      title: sessao.nome || 'Cliente não informado',
       start: new Date(sessao.dataHoraInicio),
       end: new Date(sessao.dataHoraFim),
       resource: sessao,
@@ -102,7 +102,7 @@ export default function AgendaSemanal({
         backgroundColor = 'hsl(var(--destructive))';
         borderColor = 'hsl(var(--destructive))';
         break;
-      case StatusSessao.FALTA:
+      case 'FALTA':
         backgroundColor = 'hsl(var(--muted-foreground))';
         borderColor = 'hsl(var(--muted-foreground))';
         break;
@@ -184,7 +184,7 @@ export default function AgendaSemanal({
   }, [onEventSelect]);
 
   // Handler para atualizar status da sessão
-  const handleStatusChange = useCallback(async (newStatus: StatusSessao) => {
+  const handleStatusChange = useCallback(async (newStatus: string) => {
     if (!state.selectedEvent) return;
 
     setState(prev => ({ ...prev, loadingEventId: state.selectedEvent!.id }));
@@ -192,7 +192,7 @@ export default function AgendaSemanal({
     try {
       // Importar e usar mock API para desenvolvimento
       const { mockApiCalls } = await import('@/data/demoData');
-      await mockApiCalls.atualizarStatusSessao(state.selectedEvent.id, newStatus);
+      await mockApiCalls.atualizarStatusSessao(state.selectedEvent.id, newStatus as any);
       
       toast.success(`Status atualizado para ${newStatus}!`, {
         className: 'soul-toast-success',
@@ -229,7 +229,7 @@ export default function AgendaSemanal({
             {moment(event.start).format('HH:mm')} - {moment(event.end).format('HH:mm')}
           </span>
         </div>
-        {status !== StatusSessao.AGENDADA && (
+        {status !== 'AGENDADA' && (
           <Badge 
             variant="secondary" 
             className="text-xs mt-1 bg-white/20 text-white border-white/30"
@@ -330,17 +330,17 @@ export default function AgendaSemanal({
                 <label className="text-sm font-medium">Status da Sessão:</label>
                 <Select
                   value={state.selectedEvent.resource.status}
-                  onValueChange={(value) => handleStatusChange(value as StatusSessao)}
+                  onValueChange={handleStatusChange}
                   disabled={state.loadingEventId === state.selectedEvent.id}
                 >
                   <SelectTrigger className="w-full mt-1">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value={StatusSessao.AGENDADA}>Agendada</SelectItem>
-                    <SelectItem value={StatusSessao.CONCLUIDA}>Concluída</SelectItem>
-                    <SelectItem value={StatusSessao.CANCELADA}>Cancelada</SelectItem>
-                    <SelectItem value={StatusSessao.FALTA}>Falta</SelectItem>
+                    <SelectItem value="AGENDADA">Agendada</SelectItem>
+                    <SelectItem value="CONCLUIDA">Concluída</SelectItem>
+                    <SelectItem value="CANCELADA">Cancelada</SelectItem>
+                    <SelectItem value="FALTA">Falta</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

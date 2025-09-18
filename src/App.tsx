@@ -12,6 +12,8 @@ import LoginPage from '@/components/LoginPage';
 import Navigation from '@/components/Navigation';
 import Dashboard from '@/components/Dashboard';
 import CalendarioPage from '@/components/CalendarioPage';
+import ClientesPage from '@/components/ClientesPage';
+import AvaliacaoPage from '@/components/AvaliacaoPage';
 import { Card, CardContent } from '@/components/ui/card';
 import { Users, FileText, Calendar, Home } from 'lucide-react';
 
@@ -47,7 +49,7 @@ const AuthenticatedApp = () => {
       case 'clientes':
         return <ClientesPage onSelectCliente={() => {}} onAddCliente={() => {}} />;
       case 'avaliacoes':
-        return <AvaliacoesPage />;
+        return <AvaliacaoPage />;
       default:
         return <Dashboard onNavigate={setCurrentPage} />;
     }
