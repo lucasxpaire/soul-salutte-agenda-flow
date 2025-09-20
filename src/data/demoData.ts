@@ -156,12 +156,7 @@ export const demoStats: DashboardStats = {
     moment(s.dataHoraInicio).isSame(moment(), 'day')
   ).length,
   sessoesSemana: demoSessoes.length,
-  faturamentoMes: demoSessoes
-    .filter(s => 
-      moment(s.dataHoraInicio).isSame(moment(), 'month') && 
-      s.status === 'CONCLUIDA'
-    )
-    .reduce((total, s) => total + 80, 0),
+  taxaConclusao: Math.round((demoSessoes.filter(s => s.status === 'CONCLUIDA').length / demoSessoes.length) * 100),
 };
 
 // Simular chamadas de API com delay

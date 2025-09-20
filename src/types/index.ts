@@ -129,7 +129,7 @@ export interface DashboardStats {
   totalClientes: number;
   sessoesHoje: number;
   sessoesSemana: number;
-  faturamentoMes: number;
+  taxaConclusao: number;
 }
 
 // Context Types

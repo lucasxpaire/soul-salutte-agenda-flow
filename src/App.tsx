@@ -17,6 +17,7 @@ import ClienteDetalhesPage from '@/components/ClienteDetalhesPage';
 import ClienteForm from '@/components/ClienteForm';
 import AvaliacaoForm from '@/components/AvaliacaoForm';
 import AvaliacaoDetalhesModal from '@/components/AvaliacaoDetalhesModal';
+import SessaoForm from '@/components/SessaoForm';
 import { Card, CardContent } from '@/components/ui/card';
 import { Users, FileText, Calendar, Home } from 'lucide-react';
 import { Cliente, AvaliacaoFisioterapeutica } from '@/types';
@@ -50,6 +51,8 @@ const AuthenticatedApp = () => {
   const [avaliacaoToEdit, setAvaliacaoToEdit] = useState<AvaliacaoFisioterapeutica | null>(null);
   const [showAvaliacaoDetalhes, setShowAvaliacaoDetalhes] = useState(false);
   const [clienteIdForAvaliacao, setClienteIdForAvaliacao] = useState<number | null>(null);
+  const [showSessaoForm, setShowSessaoForm] = useState(false);
+  const [initialDate, setInitialDate] = useState<Date | undefined>();
 
   const handleSelectCliente = (cliente: Cliente) => {
     setSelectedCliente(cliente);
@@ -116,7 +119,13 @@ const AuthenticatedApp = () => {
       case 'dashboard':
         return <Dashboard onNavigate={setCurrentPage} />;
       case 'agenda':
-        return <CalendarioPage onAddSessao={() => {}} onEditSessao={() => {}} />;
+        return <CalendarioPage 
+          onAddSessao={(date) => {
+            setInitialDate(date);
+            setShowSessaoForm(true);
+          }} 
+          onEditSessao={() => {}} 
+        />;
       case 'clientes':
         return <ClientesPage onSelectCliente={handleSelectCliente} onAddCliente={handleAddCliente} />;
       default:
@@ -157,6 +166,19 @@ const AuthenticatedApp = () => {
         isOpen={showAvaliacaoDetalhes}
         onClose={() => setShowAvaliacaoDetalhes(false)}
         avaliacao={avaliacaoToEdit}
+      />
+
+      <SessaoForm
+        isOpen={showSessaoForm}
+        onClose={() => {
+          setShowSessaoForm(false);
+          setInitialDate(undefined);
+        }}
+        initialDate={initialDate}
+        onSave={() => {
+          setShowSessaoForm(false);
+          setInitialDate(undefined);
+        }}
       />
     </div>
   );

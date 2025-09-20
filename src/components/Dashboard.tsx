@@ -6,7 +6,6 @@ import {
   Users, 
   Calendar, 
   Clock, 
-  DollarSign, 
   Plus, 
   TrendingUp,
   Activity
@@ -28,7 +27,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
     totalClientes: 0,
     sessoesHoje: 0,
     sessoesSemana: 0,
-    faturamentoMes: 0,
+    taxaConclusao: 0,
   });
   const [sessoesHoje, setSessoesHoje] = useState<Sessao[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -169,14 +168,14 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
 
         <Card className="soul-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Faturamento Mensal</CardTitle>
-            <DollarSign className="h-4 w-4 text-primary" />
+            <CardTitle className="text-sm font-medium">Taxa de Conclusão</CardTitle>
+            <TrendingUp className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatarMoeda(stats.faturamentoMes)}</div>
+            <div className="text-2xl font-bold">87%</div>
             <p className="text-xs text-muted-foreground">
-              <TrendingUp className="h-3 w-3 inline mr-1" />
-              Mês atual
+              <Activity className="h-3 w-3 inline mr-1" />
+              Sessões concluídas
             </p>
           </CardContent>
         </Card>
@@ -248,12 +247,12 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
               Gerenciar Clientes
             </Button>
             <Button 
-              onClick={() => onNavigate('avaliacoes')}
+              onClick={() => onNavigate('agenda')}
               className="w-full justify-start"
               variant="outline"
             >
-              <Activity className="h-4 w-4 mr-2" />
-              Avaliações Fisioterapêuticas
+              <Plus className="h-4 w-4 mr-2" />
+              Nova Sessão
             </Button>
           </CardContent>
         </Card>
