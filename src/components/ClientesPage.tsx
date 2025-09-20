@@ -21,10 +21,11 @@ const ClientesPage: React.FC<ClientesPageProps> = ({ onSelectCliente, onAddClien
     const fetchClientes = async () => {
       try {
         const data = await getClientes(searchTerm);
-        setClientes(data);
+        setClientes(Array.isArray(data) ? data : []);
       } catch (error) {
         toast.error('Erro ao buscar clientes.');
         console.error(error);
+        setClientes([]);
       }
     };
     fetchClientes();
@@ -78,7 +79,7 @@ const ClientesPage: React.FC<ClientesPageProps> = ({ onSelectCliente, onAddClien
 
       {/* Lista de Clientes */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {clientes.map((cliente) => (
+        {Array.isArray(clientes) && clientes.map((cliente) => (
           <Card 
             key={cliente.id} 
             className="hover:shadow-md transition-shadow cursor-pointer"
