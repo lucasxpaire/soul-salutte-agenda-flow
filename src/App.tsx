@@ -8,7 +8,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 
 // Componentes
-import LoginPage from '@/components/LoginPage';
+import LoginForm from '@/components/LoginForm';
 import Navigation from '@/components/Navigation';
 import Dashboard from '@/components/Dashboard';
 import CalendarioPage from '@/components/CalendarioPage';
@@ -189,7 +189,7 @@ const AppContent = () => {
   const { isAuthenticated } = useAuth();
 
   if (!isAuthenticated) {
-    return <LoginPage />;
+    return <LoginForm />;
   }
 
   return <AuthenticatedApp />;
