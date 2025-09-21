@@ -45,7 +45,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
         const hoje = moment().format('YYYY-MM-DD');
         const amanha = moment().add(1, 'day').format('YYYY-MM-DD');
         const sessoesData = await mockApiCalls.getSessoesPorPeriodo(hoje, amanha);
-        setSessoesHoje(sessoesData);
+        setSessoesHoje(Array.isArray(sessoesData) ? sessoesData : []);
 
       } catch (error) {
         console.error('Erro ao carregar dados do dashboard:', error);

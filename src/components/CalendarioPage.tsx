@@ -27,7 +27,7 @@ export default function CalendarioPage({ onAddSessao, onEditSessao }: Calendario
       const fimSemana = moment().endOf('week').format('YYYY-MM-DD');
       
       const sessoesCarregadas = await mockApiCalls.getSessoesPorPeriodo(inicioSemana, fimSemana);
-      setSessoes(sessoesCarregadas);
+      setSessoes(Array.isArray(sessoesCarregadas) ? sessoesCarregadas : []);
     } catch (error) {
       console.error('Erro ao carregar sessões:', error);
       toast.error('Erro ao carregar sessões. Tente novamente.');
@@ -49,10 +49,13 @@ export default function CalendarioPage({ onAddSessao, onEditSessao }: Calendario
       await mockApiCalls.moverSessao(event.id, novoInicio, novoFim);
       
       // Atualizar estado local
-      setSessoes(prev => prev.map(sessao => 
-        sessao.id === event.id 
-          ? { ...sessao, dataHoraInicio: novoInicio, dataHoraFim: novoFim }
-          : sessao
+      setSessoes(prev => (Array.isArray(prev)
+        ? prev.map(sessao => 
+            sessao.id === event.id 
+              ? { ...sessao, dataHoraInicio: novoInicio, dataHoraFim: novoFim }
+              : sessao
+          )
+        : prev
       ));
       
       toast.success('Sessão reagendada com sucesso!');
@@ -72,10 +75,13 @@ export default function CalendarioPage({ onAddSessao, onEditSessao }: Calendario
       await mockApiCalls.moverSessao(event.id, novoInicio, novoFim);
       
       // Atualizar estado local
-      setSessoes(prev => prev.map(sessao => 
-        sessao.id === event.id 
-          ? { ...sessao, dataHoraInicio: novoInicio, dataHoraFim: novoFim }
-          : sessao
+      setSessoes(prev => (Array.isArray(prev)
+        ? prev.map(sessao => 
+            sessao.id === event.id 
+              ? { ...sessao, dataHoraInicio: novoInicio, dataHoraFim: novoFim }
+              : sessao
+          )
+        : prev
       ));
       
       toast.success('Duração da sessão atualizada!');

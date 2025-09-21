@@ -76,13 +76,15 @@ export default function AgendaSemanal({
 
   // Converter sessões para eventos do calendário
   const events: CalendarEvent[] = useMemo(() => {
-    return sessoes.map((sessao) => ({
-      id: sessao.id!,
-      title: sessao.nome || 'Cliente não informado',
-      start: new Date(sessao.dataHoraInicio),
-      end: new Date(sessao.dataHoraFim),
-      resource: sessao,
-    }));
+    return Array.isArray(sessoes)
+      ? sessoes.map((sessao) => ({
+          id: sessao.id!,
+          title: sessao.nome || 'Cliente não informado',
+          start: new Date(sessao.dataHoraInicio),
+          end: new Date(sessao.dataHoraFim),
+          resource: sessao,
+        }))
+      : [];
   }, [sessoes]);
 
   // Função para obter cor baseada no status
@@ -297,11 +299,7 @@ export default function AgendaSemanal({
           }}
           
           // Accessibility
-          accessors={{
-            start: 'start',
-            end: 'end',
-            title: 'title',
-          }}
+          // Removed invalid 'accessors' prop; react-big-calendar uses default accessors for 'start', 'end', and 'title'.
         />
       </div>
 

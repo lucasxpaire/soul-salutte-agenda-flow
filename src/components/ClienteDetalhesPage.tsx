@@ -37,7 +37,7 @@ const ClienteDetalhesPage: React.FC<ClienteDetalhesPageProps> = ({ cliente, onBa
   const fetchAvaliacoes = async () => {
     try {
       const avaliacoesData = await getAvaliacoesByCliente(cliente.id);
-      setAvaliacoes(avaliacoesData);
+      setAvaliacoes(Array.isArray(avaliacoesData) ? avaliacoesData : []);
     } catch (error) {
       toast.error('Erro ao recarregar as avaliações.');
       console.error(error);
@@ -51,8 +51,8 @@ const ClienteDetalhesPage: React.FC<ClienteDetalhesPageProps> = ({ cliente, onBa
           getAvaliacoesByCliente(cliente.id),
           getSessoesByClienteId(cliente.id)
         ]);
-        setAvaliacoes(avaliacoesData);
-        setSessoes(sessoesData);
+        setAvaliacoes(Array.isArray(avaliacoesData) ? avaliacoesData : []);
+        setSessoes(Array.isArray(sessoesData) ? sessoesData : []);
       } catch (error) {
         toast.error('Erro ao buscar dados do cliente.');
         console.error(error);
