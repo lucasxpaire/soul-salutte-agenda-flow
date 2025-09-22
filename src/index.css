@@ -108,7 +108,7 @@
 }
 
 .bg-login {
-  background: hsl(var(--soul-primary));
+  background: hsl(var(--primary));
 }
 
 @layer base {

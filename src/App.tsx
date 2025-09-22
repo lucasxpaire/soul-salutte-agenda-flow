@@ -96,8 +96,9 @@ const AuthenticatedApp = () => {
   };
 
   const handleAddSessao = (clienteId: number) => {
-    // Implementar lógica para adicionar sessão
-    console.log('Add sessao for cliente:', clienteId);
+    setClienteIdForAvaliacao(clienteId);
+    setSessaoToEdit(null);
+    setShowSessaoForm(true);
   };
 
   const renderPage = () => {
