@@ -93,9 +93,15 @@ export default function CalendarioPage({ onAddSessao, onEditSessao }: Calendario
   }, []);
 
   const handleEventSelect = useCallback((event: CalendarEvent) => {
-    // Implementar seleção de evento se necessário
-    console.log('Evento selecionado:', event);
-  }, []);
+    if (event.action === 'edit') {
+      onEditSessao(event.resource);
+    } else if (event.action === 'delete') {
+      // Implementar lógica de exclusão
+      console.log('Excluir sessão:', event.resource);
+    } else {
+      console.log('Evento selecionado:', event);
+    }
+  }, [onEditSessao]);
 
   const handleSelectSlot = useCallback((slotInfo: { start: Date; end: Date }) => {
     onAddSessao(slotInfo.start);

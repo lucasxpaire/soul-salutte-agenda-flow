@@ -344,11 +344,19 @@ export default function AgendaSemanal({
               </div>
 
               <div className="flex gap-2">
-                <Button variant="outline" size="sm" className="flex-1">
+                <Button variant="outline" size="sm" className="flex-1" onClick={() => {
+                  if (onEventSelect) {
+                    onEventSelect({...state.selectedEvent, action: 'edit'});
+                  }
+                }}>
                   <Edit className="h-4 w-4 mr-1" />
                   Editar
                 </Button>
-                <Button variant="destructive" size="sm" className="flex-1">
+                <Button variant="destructive" size="sm" className="flex-1" onClick={() => {
+                  if (onEventSelect) {
+                    onEventSelect({...state.selectedEvent, action: 'delete'});
+                  }
+                }}>
                   <Trash2 className="h-4 w-4 mr-1" />
                   Excluir
                 </Button>

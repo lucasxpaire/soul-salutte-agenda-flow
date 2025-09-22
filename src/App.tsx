@@ -53,6 +53,7 @@ const AuthenticatedApp = () => {
   const [clienteIdForAvaliacao, setClienteIdForAvaliacao] = useState<number | null>(null);
   const [showSessaoForm, setShowSessaoForm] = useState(false);
   const [initialDate, setInitialDate] = useState<Date | undefined>();
+  const [sessaoToEdit, setSessaoToEdit] = useState<any>(null);
 
   const handleSelectCliente = (cliente: Cliente) => {
     setSelectedCliente(cliente);
@@ -122,9 +123,13 @@ const AuthenticatedApp = () => {
         return <CalendarioPage 
           onAddSessao={(date) => {
             setInitialDate(date);
+            setSessaoToEdit(null);
             setShowSessaoForm(true);
           }} 
-          onEditSessao={() => {}} 
+          onEditSessao={(sessao) => {
+            setSessaoToEdit(sessao);
+            setShowSessaoForm(true);
+          }} 
         />;
       case 'clientes':
         return <ClientesPage onSelectCliente={handleSelectCliente} onAddCliente={handleAddCliente} />;
@@ -173,11 +178,14 @@ const AuthenticatedApp = () => {
         onClose={() => {
           setShowSessaoForm(false);
           setInitialDate(undefined);
+          setSessaoToEdit(null);
         }}
+        sessao={sessaoToEdit}
         initialDate={initialDate}
         onSave={() => {
           setShowSessaoForm(false);
           setInitialDate(undefined);
+          setSessaoToEdit(null);
         }}
       />
     </div>

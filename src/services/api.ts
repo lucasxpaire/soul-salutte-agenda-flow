@@ -42,8 +42,12 @@ api.interceptors.response.use(
 // =============================================================================
 
 // Funções para Clientes
-export const getClientes = (nome?: string): Promise<Cliente[]> => {
-  return api.get('/clientes', { params: { nome } }).then(res => res.data);
+export const getClientes = async (nome?: string): Promise<Cliente[]> => {
+  // Para desenvolvimento, usar dados mock
+  const { demoClientes } = await import('@/data/demoData');
+  return demoClientes.filter(cliente => 
+    !nome || cliente.nome.toLowerCase().includes(nome.toLowerCase())
+  );
 };
 
 export const getClienteById = (id: number): Promise<Cliente> => {
@@ -71,8 +75,10 @@ export const getSessoes = (): Promise<Sessao[]> => {
   return api.get('/sessoes').then(res => res.data);
 };
 
-export const getSessoesByClienteId = (clienteId: number): Promise<Sessao[]> => {
-    return api.get(`/sessoes/cliente/${clienteId}`).then(res => res.data);
+export const getSessoesByClienteId = async (clienteId: number): Promise<Sessao[]> => {
+    // Para desenvolvimento, usar dados mock
+    const { demoSessoes } = await import('@/data/demoData');
+    return demoSessoes.filter(sessao => sessao.clienteId === clienteId);
 };
 
 export const createSessao = (sessao: Omit<Sessao, 'id'>): Promise<Sessao> => {
@@ -113,8 +119,9 @@ export const atualizarStatusSessao = (id: number, status: string): Promise<Sessa
 // =============================================================================
 
 // Funções para Avaliações
-export const getAvaliacoesByCliente = (clienteId: number): Promise<AvaliacaoFisioterapeutica[]> => {
-  return api.get(`/avaliacoes/cliente/${clienteId}`).then(res => res.data);
+export const getAvaliacoesByCliente = async (clienteId: number): Promise<AvaliacaoFisioterapeutica[]> => {
+  // Para desenvolvimento, retornar array vazio
+  return [];
 };
 
 export const createAvaliacao = (avaliacao: Omit<AvaliacaoFisioterapeutica, 'id'>): Promise<AvaliacaoFisioterapeutica> => {

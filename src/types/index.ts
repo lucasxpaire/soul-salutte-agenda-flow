@@ -117,6 +117,7 @@ export interface CalendarEvent {
   start: Date;
   end: Date;
   resource: Sessao;
+  action?: 'edit' | 'delete';
 }
 
 export interface ApiResponse<T> {
