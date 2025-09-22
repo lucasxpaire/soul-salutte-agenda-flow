@@ -194,7 +194,7 @@ export default function Dashboard({ onNavigate }: DashboardProps) {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {sessoesHoje.length === 0 ? (
+            {!Array.isArray(sessoesHoje) || sessoesHoje.length === 0 ? (
               <div className="text-center py-6 text-muted-foreground">
                 <Calendar className="h-8 w-8 mx-auto mb-2 opacity-50" />
                 <p>Nenhuma sessão agendada para hoje</p>

@@ -142,7 +142,7 @@ const ClienteDetalhesPage: React.FC<ClienteDetalhesPageProps> = ({ cliente, onBa
           </Button>
         </CardHeader>
         <CardContent>
-          {avaliacoes.length > 0 ? (
+          {Array.isArray(avaliacoes) && avaliacoes.length > 0 ? (
             <div className="space-y-3">
               {avaliacoes.map(ava => (
                 <div key={ava.id} className="flex justify-between items-center p-3 border rounded-lg">
@@ -180,7 +180,7 @@ const ClienteDetalhesPage: React.FC<ClienteDetalhesPageProps> = ({ cliente, onBa
           <CardTitle>Histórico de Sessões</CardTitle>
         </CardHeader>
         <CardContent>
-          {sessoes.length > 0 ? (
+          {Array.isArray(sessoes) && sessoes.length > 0 ? (
             <div className="space-y-3">
               {sessoes.map(sessao => (
                 <div key={sessao.id} className="flex justify-between items-center p-3 border rounded-lg">
