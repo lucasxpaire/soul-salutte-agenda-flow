@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Edit, Trash2, FilePlus, User, Mail, Phone, Cake, Briefcase, MapPin, CalendarPlus } from 'lucide-react';
+import { ArrowLeft, Edit, Trash2, FilePlus, User, Mail, Phone, Cake, Briefcase, MapPin, CalendarPlus, FileDown } from 'lucide-react';
 import { Cliente, AvaliacaoFisioterapeutica, Sessao } from '@/types';
 import { getAvaliacoesByCliente, getSessoesByClienteId, deleteAvaliacao } from '@/services/api';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { toast } from 'sonner';
+import { gerarPDFAvaliacao } from '@/utils/pdfGenerator';
 
 interface ClienteDetalhesPageProps {
   cliente: Cliente;
@@ -68,6 +69,16 @@ const ClienteDetalhesPage: React.FC<ClienteDetalhesPageProps> = ({ cliente, onBa
       fetchAvaliacoes(); 
     } catch (error) {
       toast.error("Falha ao excluir a avaliação.");
+      console.error(error);
+    }
+  };
+
+  const handleGerarPDF = (avaliacao: AvaliacaoFisioterapeutica) => {
+    try {
+      gerarPDFAvaliacao(avaliacao, cliente);
+      toast.success('PDF gerado com sucesso!');
+    } catch (error) {
+      toast.error('Erro ao gerar PDF');
       console.error(error);
     }
   };
@@ -156,6 +167,10 @@ const ClienteDetalhesPage: React.FC<ClienteDetalhesPageProps> = ({ cliente, onBa
                   </div>
                   <div className="flex items-center gap-2">
                     <Button variant="outline" size="sm" onClick={() => onViewAvaliacao(ava)}>Ver Detalhes</Button>
+                    <Button variant="outline" size="sm" onClick={() => handleGerarPDF(ava)}>
+                      <FileDown className="w-3 h-3 mr-1.5" />
+                      PDF
+                    </Button>
                     <Button variant="outline" size="sm" onClick={() => onEditAvaliacao(ava)}>
                       <Edit className="w-3 h-3 mr-1.5" />
                       Editar

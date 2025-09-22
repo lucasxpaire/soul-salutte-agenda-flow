@@ -1,11 +1,14 @@
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { AvaliacaoFisioterapeutica } from '@/types';
+import { AvaliacaoFisioterapeutica, Cliente } from '@/types';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Stethoscope, Activity, Clipboard, Thermometer, FileText, History, CheckCircle2, XCircle, ShieldQuestion } from 'lucide-react';
+import { Stethoscope, Activity, Clipboard, Thermometer, FileText, History, CheckCircle2, XCircle, ShieldQuestion, FileDown } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { gerarPDFAvaliacao } from '@/utils/pdfGenerator';
+import { toast } from 'sonner';
+import { getClientes } from '@/services/api';
 
 interface AvaliacaoDetalhesModalProps {
   isOpen: boolean;
@@ -66,6 +69,27 @@ const PainDisplay: React.FC<{ value: number }> = ({ value }) => {
 };
 
 const AvaliacaoDetalhesModal: React.FC<AvaliacaoDetalhesModalProps> = ({ isOpen, onClose, avaliacao }) => {
+  const handleGerarPDF = async () => {
+    if (!avaliacao) return;
+    
+    try {
+      // Buscar dados do cliente
+      const clientes = await getClientes();
+      const cliente = clientes.find(c => c.id === avaliacao.clienteId);
+      
+      if (!cliente) {
+        toast.error('Cliente não encontrado');
+        return;
+      }
+      
+      gerarPDFAvaliacao(avaliacao, cliente);
+      toast.success('PDF gerado com sucesso!');
+    } catch (error) {
+      toast.error('Erro ao gerar PDF');
+      console.error(error);
+    }
+  };
+
   if (!avaliacao) return null;
 
   const formatDate = (dateString: string | undefined) => {
@@ -165,6 +189,10 @@ const AvaliacaoDetalhesModal: React.FC<AvaliacaoDetalhesModalProps> = ({ isOpen,
         </div>
 
         <DialogFooter className="p-4 border-t bg-muted/30">
+          <Button variant="outline" onClick={handleGerarPDF}>
+            <FileDown className="w-4 h-4 mr-2" />
+            Gerar PDF
+          </Button>
           <Button type="button" variant="outline" onClick={onClose}>Fechar</Button>
         </DialogFooter>
       </DialogContent>
